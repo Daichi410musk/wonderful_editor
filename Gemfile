@@ -47,6 +47,10 @@ group :development, :test do
   # → pry-byebugを使うので基本いらない。消すかコメントアウトでOK
   # gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 
+  gem 'factory_bot_rails'
+  gem 'faker'
+  gem 'rspec-rails'
+
   # ★ 追加: pry系デバッグツール
   gem 'pry-byebug'
   gem 'pry-doc'
