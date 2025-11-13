@@ -15,8 +15,17 @@ gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 5.0'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
+
+# jbuilder は使わず active_model_serializers を使うのでコメントアウト
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+# gem 'jbuilder', '~> 2.7'
+
+# ★ 追加: JSON返却用
+gem 'active_model_serializers'
+
+# ★ 追加: トークン形式のユーザー認証
+gem 'devise_token_auth'
+
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
@@ -25,12 +34,26 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
+# ★ 追加: モデル等にschemaを自動でコメント出力
+gem 'annotate'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  # → pry-byebugを使うので基本いらない。消すかコメントアウトでOK
+  # gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+
+  # ★ 追加: pry系デバッグツール
+  gem 'pry-rails'
+  gem 'pry-byebug'
+  gem 'pry-doc'
+
+  # ★ 追加: rubocop 関連
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
 end
 
 group :development do
