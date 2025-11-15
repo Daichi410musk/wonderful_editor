@@ -35,11 +35,18 @@ RSpec.describe 'Api::V1::Articles', type: :request do
   describe 'GET /articles/:id' do
     let(:article) { create(:article, user: user) }
 
+    # rubocop:disable RSpec/ExampleLength
     it '必要な情報が返る' do
       get api_v1_article_path(article), headers: auth_headers
       json = response.parsed_body
-      expect(json).to include('id' => article.id, 'title' => article.title, 'body' => article.body)
+
+      expect(json.slice('id', 'title', 'body')).to eq(
+        'id' => article.id,
+        'title' => article.title,
+        'body' => article.body
+      )
     end
+    # rubocop:enable RSpec/ExampleLength
 
     it '存在しない場合は RecordNotFound' do
       expect do
@@ -77,6 +84,23 @@ RSpec.describe 'Api::V1::Articles', type: :request do
             headers: auth_headers
 
       expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
+  describe 'DELETE /articles/:id' do
+    let!(:article) { create(:article, user: user) }
+
+    it 'current_user に紐づいた記事が削除される' do
+      expect do
+        delete api_v1_article_path(article), headers: auth_headers
+      end.to change(Article, :count).by(-1)
+    end
+
+    it '204 No Content が返る' do
+      new_article = create(:article, user: user)
+      delete api_v1_article_path(new_article), headers: auth_headers
+
+      expect(response).to have_http_status(:no_content)
     end
   end
 end
