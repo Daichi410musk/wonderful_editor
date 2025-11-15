@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Articles', type: :request do
+  # ================================
+  # GET /articles
+  # ================================
   describe 'GET /articles' do
     subject(:request) { get(api_v1_articles_path) }
 
@@ -28,6 +31,9 @@ RSpec.describe 'Api::V1::Articles', type: :request do
     end
   end
 
+  # ================================
+  # GET /articles/:id
+  # ================================
   describe 'GET /articles/:id' do
     subject(:request) { get(api_v1_article_path(article_id)) }
 
@@ -72,5 +78,42 @@ RSpec.describe 'Api::V1::Articles', type: :request do
         expect { request }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
+  end
+
+  # ================================
+  # POST /articles
+  # ================================
+  describe 'POST /articles' do
+    subject(:request) { post(api_v1_articles_path, params: params) }
+
+    let(:user) { create(:user) }
+    let(:params) do
+      {
+        article: {
+          title: 'タイトル',
+          body: '本文です'
+        }
+      }
+    end
+
+    # rubocop:disable RSpec/AnyInstance
+    before do
+      allow_any_instance_of(Api::V1::BaseApiController)
+        .to receive(:current_user)
+        .and_return(user)
+    end
+    # rubocop:enable RSpec/AnyInstance
+
+    # rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations
+    it 'current_user に紐づいた記事が作成される' do
+      expect { request }.to change(Article, :count).by(1)
+      expect(response).to have_http_status(:created)
+
+      article = Article.last
+      expect(article.title).to eq('タイトル')
+      expect(article.body).to eq('本文です')
+      expect(article.user_id).to eq(user.id)
+    end
+    # rubocop:enable RSpec/ExampleLength, RSpec/MultipleExpectations
   end
 end
