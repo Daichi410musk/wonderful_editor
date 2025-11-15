@@ -3,16 +3,21 @@
 module Api
   module V1
     class ArticlesController < BaseApiController
-      # BaseApiController に認証の before_action を書いているなら、
-      # 一覧は誰でも見れるように index だけスキップする
-      # 例）before_action :authenticate_api_v1_user! があるなら↓を有効化
-      # skip_before_action :authenticate_api_v1_user!, only: :index
+      skip_before_action :authenticate_user!, only: %i[index show]
 
       def index
         articles = Article.order(updated_at: :desc)
+        render json: articles.select(:id, :title, :updated_at)
+      end
 
-        render json: articles,
-               each_serializer: Api::V1::ArticlePreviewSerializer
+      def show
+        article = Article.find(params[:id])
+        render json: {
+          id: article.id,
+          title: article.title,
+          body: article.body,
+          updated_at: article.updated_at
+        }
       end
     end
   end
