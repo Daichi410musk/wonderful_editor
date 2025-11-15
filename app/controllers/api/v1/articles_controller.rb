@@ -3,7 +3,7 @@
 module Api
   module V1
     class ArticlesController < BaseApiController
-      before_action :set_article, only: %i[show update]
+      before_action :set_article, only: %i[show update destroy]
 
       # GET /api/v1/articles
       def index
@@ -34,6 +34,12 @@ module Api
         else
           render json: { errors: @article.errors.full_messages }, status: :unprocessable_entity
         end
+      end
+
+      # DELETE /api/v1/articles/:id
+      def destroy
+        @article.destroy!
+        head :no_content
       end
 
       private
