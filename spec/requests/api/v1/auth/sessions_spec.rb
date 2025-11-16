@@ -54,4 +54,17 @@ RSpec.describe 'Api::V1::Auth::Sessions', type: :request do
       end
     end
   end
+
+  describe 'DELETE /api/v1/auth/sign_out' do
+    let(:user) { create(:user) }
+    let(:headers) { user.create_new_auth_token }
+
+    it 'ログアウトできる' do
+      delete '/api/v1/auth/sign_out', headers: headers
+
+      expect(response).to have_http_status(:success)
+      # 余裕あればトークン削除の確認もできる（任意）
+      # expect(user.reload.tokens).to be_empty
+    end
+  end
 end
