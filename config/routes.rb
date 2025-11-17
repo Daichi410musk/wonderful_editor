@@ -14,6 +14,11 @@ Rails.application.routes.draw do
       namespace :articles do
         resources :drafts, only: %i[index show]
       end
+
+      # ここを追加
+      namespace :current do
+        resources :articles, only: %i[index]
+      end
     end
   end
 end
