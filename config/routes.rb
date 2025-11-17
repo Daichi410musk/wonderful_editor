@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# config/routes.rb
 Rails.application.routes.draw do
   root to: 'home#index'
 
@@ -9,7 +8,12 @@ Rails.application.routes.draw do
       mount_devise_token_auth_for 'User', at: 'auth', controllers: {
         registrations: 'api/v1/auth/registrations'
       }
+
       resources :articles
+
+      namespace :articles do
+        resources :drafts, only: %i[index show]
+      end
     end
   end
 end
