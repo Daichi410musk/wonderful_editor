@@ -3,18 +3,26 @@
 module Api
   module V1
     class ArticlesController < BaseApiController
+      # 一覧・詳細は誰でも見れる（ただし公開記事だけ）
       skip_before_action :authenticate_user!, only: %i[index show]
-      before_action :set_article, only: %i[show update destroy]
+      # 更新・削除は自分の記事だけ
+      before_action :set_article, only: %i[update destroy]
 
       # GET /api/v1/articles
       def index
-        articles = Article.order(updated_at: :desc).select(:id, :title, :updated_at)
+        # 公開記事だけ & body を含めない
+        articles = Article.published
+                          .order(updated_at: :desc)
+                          .select(:id, :title, :updated_at)
+
         render json: articles
       end
 
       # GET /api/v1/articles/:id
       def show
-        render json: @article
+        # 公開記事だけ取得できるようにする
+        article = Article.published.find(params[:id])
+        render json: article
       end
 
       # POST /api/v1/articles
@@ -46,12 +54,16 @@ module Api
       private
 
       def set_article
-        # 自分の記事だけ更新・参照できるようにしておく
+        # 自分の記事だけ更新・削除できるようにしておく
         @article = current_user.articles.find(params[:id])
       end
 
       def article_params
-        params.require(:article).permit(:title, :body)
+        # status を許可（"draft" or "published" が入る想定）
+        params.require(:article).permit(:title, :body, :status).tap do |p|
+          # パラメータで status が来てなかったら draft にしておきたい場合はここ
+          p[:status] ||= 'draft'
+        end
       end
     end
   end
