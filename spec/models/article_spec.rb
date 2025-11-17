@@ -24,4 +24,16 @@ RSpec.describe Article, type: :model do
       expect(invalid_article).to be_invalid
     end
   end
+
+  describe 'status' do
+    it '下書き記事として保存できる' do
+      article = described_class.new(title: 'draft title', body: '内容', status: :draft, user: user)
+      expect(article).to be_valid
+    end
+
+    it '公開記事として保存できる' do
+      article = described_class.new(title: 'pub title', body: '内容', status: :published, user: user)
+      expect(article).to be_valid
+    end
+  end
 end
